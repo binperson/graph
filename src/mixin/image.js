@@ -1,13 +1,14 @@
+import { mapState } from 'vuex'
 export default {
 	computed: {
 		sidebarUrl() {
-      return this.getValidImageUrl(this.option ? this.option.sidebarImageUrl || '' : '')
-    }
+      console.log(this.options)
+      return this.options.sidebarImageUrl
+    },
+    ...mapState('app', {
+      options: state => state.options
+    })
 	},
 	methods: {
-    getValidImageUrl(url) {
-      if (!this.supportWebp) return url.replace(/.webp$/, '.png').replace('/webp', '')
-      return url
-    }
   }
 }
