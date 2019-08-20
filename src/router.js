@@ -15,7 +15,7 @@ export default new Router({
     {
       path: '/DDA',
       name: 'DDA',
-      component: () => import(/* webpackChunkName: "about" */ './components/DDA/demo02')
+      component: () => import(/* webpackChunkName: "about" */ './components/DDA/')
     },
     {
       path: '/demo',

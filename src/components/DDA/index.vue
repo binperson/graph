@@ -33,32 +33,48 @@ export default {
   },
   mounted () {
     this.addGridHelper()
+    this.addDDA()
   },
   methods: {
+    addDDA (x, y, dsx, dsy) {
+      let dx = dsx - x
+      let dy = dsy - y
+      let esp1
+      if (Math.abs(dx) > Math.abs(dy)) {
+        esp1 = Math.abs(dx)
+      } else {
+        esp1 = Math.abs(dy)
+      }
+      let xIncre = dx/esp1
+      let yIncre = dy/esp1
+      for (let i = 0; i <= esp1; k++) {
+        x += xIncre
+        y += yIncre
+      }
+    },
     addGridHelper (size, divisions, color1, color2) {
-      size = size || 10;
-      divisions = divisions || 10; // divisions 分格
-      color1 = new Color( color1 !== undefined ? color1 : 0x444444 );
-      color2 = new Color( color2 !== undefined ? color2 : 0x888888 );
+      size = size || 1000
+      divisions = divisions || 100 // divisions 分格
+      color1 = new Color( color1 !== undefined ? color1 : 0x444444 )
+      color2 = new Color( color2 !== undefined ? color2 : 0x888888 )
 
-      var center = divisions / 2;
-      var step = size / divisions;
-      var halfSize = size / 2;
+      var center = divisions / 2
+      var step = size / divisions
+      var halfSize = size / 2
 
-      var vertices = [], colors = [];
+      var vertices = [], colors = []
 
       for ( var i = 0, j = 0, k = - halfSize; i <= divisions; i ++, k += step ) {
 
-        vertices.push( - halfSize, 0, k, halfSize, 0, k );
-        vertices.push( k, 0, - halfSize, k, 0, halfSize );
+        vertices.push( - halfSize, k, 0,  halfSize, k, 0 )
+        vertices.push( k, - halfSize, 0, k, halfSize, 0 )
 
-        var color = i === center ? color1 : color2;
+        var color = i === center ? color1 : color2
 
-        color.toArray( colors, j ); j += 3;
-        color.toArray( colors, j ); j += 3;
-        color.toArray( colors, j ); j += 3;
-        color.toArray( colors, j ); j += 3;
-
+        color.toArray( colors, j ); j += 3
+        color.toArray( colors, j ); j += 3
+        color.toArray( colors, j ); j += 3
+        color.toArray( colors, j ); j += 3
       }
       var geometry = new BufferGeometry();
       geometry.addAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) )
@@ -69,20 +85,20 @@ export default {
       this.scene.add(new LineSegments(geometry, material ))
     },
     createTextTexture (obj) {
-      let canvas = document.createElement("canvas");
-      canvas.width= obj.width || 400;
-      canvas.height= obj.height || 500;
-      let ctx = canvas.getContext("2d");
+      let canvas = document.createElement("canvas")
+      canvas.width= obj.width || 400
+      canvas.height= obj.height || 500
+      let ctx = canvas.getContext("2d")
 
-      ctx.font = obj.font || "Bold 50px Arial";
-      ctx.fillStyle = obj.color || "#fff";
-      ctx.fillText(obj.text, 10, 400);
+      ctx.font = obj.font || "Bold 50px Arial"
+      ctx.fillStyle = obj.color || "#fff"
+      ctx.fillText(obj.text, 10, 400)
 
-      let texture = new Texture(canvas);
-      texture.needsUpdate = true;
-      texture.wrapS = RepeatWrapping;
-      texture.wrapT = RepeatWrapping;
-      return texture;
+      let texture = new Texture(canvas)
+      texture.needsUpdate = true
+      texture.wrapS = RepeatWrapping
+      texture.wrapT = RepeatWrapping
+      return texture
     },
     addText (text, arr) {
       let material = new SpriteMaterial({

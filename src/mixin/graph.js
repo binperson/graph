@@ -45,7 +45,7 @@ export default {
       this.animate()
     },
     addHelper () {
-      var axesHelper = new AxesHelper(50)
+      var axesHelper = new AxesHelper(500)
       this.scene.add(axesHelper)
     },
     animate () {
