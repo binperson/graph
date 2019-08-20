@@ -17,7 +17,6 @@ import {
   Vector3,
   ShaderMaterial
 } from 'three'
-import { setInterval } from 'timers';
 export default {
   mixins: [mixin],
   data () {
@@ -65,10 +64,14 @@ export default {
       colorMap: {
         noIrrigate: [0.81, 0.81, 0.81], // 未浇灌
         irrigating: [0.0, 0.81, 0.96]
-      }
+      },
+      timer: null
     }
   },
   mounted () {
+    this.target = new Vector3(0, 100, 0)
+    this.camera.lookAt(this.target)
+    this.controls.target = this.target
     this.addCircle()
   },
   methods: {
@@ -92,7 +95,7 @@ export default {
       this.scene.add(plane)
       console.log(plane)
       let i = 0
-      setInterval(() => {
+      this.timer = setInterval(() => {
         i++
         if (i % 2 === 0) {
           plane.material.needsUpdate = true
@@ -105,6 +108,9 @@ export default {
         }
       }, 1000)
     }
+  },
+  destroyed () {
+    clearInterval(this.timer)
   }
 }
 </script>

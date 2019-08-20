@@ -10,7 +10,12 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/demo'
+      redirect: '/DDA'
+    },
+    {
+      path: '/DDA',
+      name: 'DDA',
+      component: () => import(/* webpackChunkName: "about" */ './components/DDA/demo02')
     },
     {
       path: '/demo',

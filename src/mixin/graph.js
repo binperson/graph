@@ -40,9 +40,7 @@ export default {
       this.renderer.gammaOutput = true
       this.renderer.gammaFactor = 2.2
       this.camera.position.set(100, 100, 100)
-      this.target = new Vector3(0, 100, 0)
-      this.camera.lookAt(this.target)
-      this.controls.target = this.target
+      
       this.addHelper()
       this.animate()
     },
