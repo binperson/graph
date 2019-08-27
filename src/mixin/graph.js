@@ -40,7 +40,7 @@ export default {
       this.renderer.gammaOutput = true
       this.renderer.gammaFactor = 2.2
       this.camera.position.set(100, 100, 100)
-      
+
       this.addHelper()
       this.animate()
     },

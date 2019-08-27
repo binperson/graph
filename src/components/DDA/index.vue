@@ -6,6 +6,71 @@
       Your browser does not seem to support <a href="http://khronos.org/webgl/wiki/Getting_a_WebGL_Implementation" style="color:#000">WebGL</a>.<br/>'
     </slot>
   </div>
+  <a-drawer
+    title="输入坐标点"
+    :width="280"
+    @close="onClose"
+    :visible="visible"
+    :wrapStyle="{height: 'calc(100% - 108px)',overflow: 'auto',paddingBottom: '108px'}"
+  >
+    <a-form :form="form" layout="vertical" hideRequiredMark>
+      <a-row :gutter="16">
+        <a-col :span="12">
+          <a-form-item label="起始点X">
+            <a-input-number
+              v-decorator="['x', { initialValue: 0 }]"
+            />
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
+          <a-form-item label="起始点Y">
+             <a-input-number
+                v-decorator="['y', { initialValue: 0 }]"
+            />
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row :gutter="16">
+        <a-col :span="12">
+          <a-form-item label="终点X">
+             <a-input-number
+              v-decorator="['dsx', { initialValue: 0 }]"
+            />
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
+          <a-form-item label="终点Y">
+            <a-input-number
+              v-decorator="['dsy', { initialValue: 0 }]"
+            />
+          </a-form-item>
+        </a-col>
+      </a-row>
+    </a-form>
+    <div
+      :style="{
+        position: 'absolute',
+        left: 0,
+        bottom: 0,
+        width: '100%',
+        borderTop: '1px solid #e9e9e9',
+        padding: '10px 16px',
+        background: '#fff',
+        textAlign: 'right',
+      }"
+    >
+      <a-button
+        :style="{marginRight: '8px'}"
+        @click="onClose"
+      >
+        取消
+      </a-button>
+      <a-button @click="confirm" type="primary">确认</a-button>
+    </div>
+  </a-drawer>
+  <div @click="showDrawer" v-if="!visible" class="icon-wrap">
+    <a-icon :component="PandaSvg" />
+  </div>
 </div>
 </template>
 <script type='text/ecmascript-6'>
@@ -21,21 +86,53 @@ import {
   RepeatWrapping,
   Float32BufferAttribute,
   LineBasicMaterial,
-  LineSegments
+  LineSegments,
+  MeshPhongMaterial,
+  SphereGeometry,
+  FlatShading,
+  SpotLight
 } from 'three'
 import { Color } from '../../math/Color.js';
+import PandaSvg from '@/components/PandaSvg'
 export default {
   mixins: [mixin],
   data () {
     return {
-
+      visible: false,
+      form: this.$form.createForm(this),
+      PandaSvg
     }
   },
+  components: {
+
+  },
   mounted () {
-    this.addGridHelper()
-    this.addDDA()
+    // this.addGridHelper()
+    // this.addLight()
+    // this.addDDA(0, 0, 4, 4)
+    this.showDrawer()
   },
   methods: {
+    confirm () {
+      this.visible = false
+    },
+    showDrawer() {
+      this.visible = true
+    },
+    onClose() {
+      this.visible = false
+    },
+    addLight () {
+      var spotLight = new SpotLight(0xffffff);
+      spotLight.position.set(100,100,100);
+      spotLight.castShadow = true; //If set to true light will cast dynamic shadows. Warning: This is expensive and requires tweaking to get shadows looking right.
+      spotLight.shadowMapWidth = 1024;
+      spotLight.shadowMapHeight = 1024;
+      spotLight.shadowCameraNear = 500;
+      spotLight.shadowCameraFar = 4000;
+      spotLight.shadowCameraFov = 30;
+      this.scene.add(spotLight);
+    },
     addDDA (x, y, dsx, dsy) {
       let dx = dsx - x
       let dy = dsy - y
@@ -47,10 +144,39 @@ export default {
       }
       let xIncre = dx/esp1
       let yIncre = dy/esp1
-      for (let i = 0; i <= esp1; k++) {
+      for (let i = 0; i <= esp1; i++) {
+        this.addSphere(x * 10, y * 10)
         x += xIncre
         y += yIncre
       }
+    },
+    /* Create Material */
+    getMat(){
+      var material = new MeshPhongMaterial({
+        color      : new Color("rgb(35,35,213)"),  //Diffuse color of the material
+        emissive   : new Color("rgb(64,128,255)"), //Emissive(light) color of the material, essentially a solid color unaffected by other lighting. Default is black.
+        specular   : new Color("rgb(93,195,255)"), /*Specular color of the material, i.e., how shiny the material is and the color of its shine.
+                                                          Setting this the same color as the diffuse value (times some intensity) makes the material more metallic-looking;
+                                                          setting this to some gray makes the material look more plastic. Default is dark gray.*/
+        shininess  : 1,                                  //How shiny the specular highlight is; a higher value gives a sharper highlight. Default is 30.
+        shading    : FlatShading,                  //How the triangles of a curved surface are rendered: THREE.SmoothShading, THREE.FlatShading, THREE.NoShading
+        wireframe  : 1,                                  //THREE.Math.randInt(0,1)
+        transparent: 1,
+        opacity    : 1                                //THREE.Math.randFloat(0,1)
+      });
+      return material;
+    },
+    addSphere (x, y) {
+      var sphereMaterial = this.getMat()
+      var sphere = new Mesh(
+        new SphereGeometry(4,20,20,0,Math.PI*2,0,Math.PI),
+        sphereMaterial
+      );
+
+      sphere.geometry.verticesNeedUpdate = true;
+      sphere.geometry.normalsNeedUpdate = true;
+      sphere.position.set(x, y, 0)
+      this.scene.add(sphere);
     },
     addGridHelper (size, divisions, color1, color2) {
       size = size || 1000
@@ -119,4 +245,11 @@ export default {
 }
 </script>
 <style scoped lang='stylus' rel='stylesheet/stylus'>
+.icon-wrap
+  position absolute
+  right 30px
+  bottom 30px
+  z-index 1000
+  .anticon
+    font-size 36px
 </style>
