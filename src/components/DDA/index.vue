@@ -100,7 +100,8 @@ export default {
     return {
       visible: false,
       form: this.$form.createForm(this),
-      PandaSvg
+      PandaSvg,
+      sphereArr: []
     }
   },
   components: {
@@ -114,7 +115,15 @@ export default {
   },
   methods: {
     confirm () {
-      this.visible = false
+      console.log(this.form)
+      // this.visible = false
+      // this.removeSphere()
+    },
+    removeSphere () {
+      while (this.sphereArr.length > 0) {
+        let sphere = this.sphereArr.pop()
+        this.scene.pop(sphere)
+      }
     },
     showDrawer() {
       this.visible = true
@@ -176,6 +185,7 @@ export default {
       sphere.geometry.verticesNeedUpdate = true;
       sphere.geometry.normalsNeedUpdate = true;
       sphere.position.set(x, y, 0)
+      this.sphereArr.push(sphere)
       this.scene.add(sphere);
     },
     addGridHelper (size, divisions, color1, color2) {
