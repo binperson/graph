@@ -10,12 +10,17 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/DDA'
+      redirect: '/MiddleBresenham'
     },
     {
       path: '/DDA',
       name: 'DDA',
       component: () => import(/* webpackChunkName: "about" */ './components/DDA/')
+    },
+    {
+      path: '/MiddleBresenham',
+      name: 'MiddleBresenham',
+      component: () => import(/* webpackChunkName: "about" */ './components/MiddleBresenham/')
     },
     {
       path: '/demo',
