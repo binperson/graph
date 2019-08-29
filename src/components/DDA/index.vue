@@ -34,14 +34,14 @@
         <a-col :span="12">
           <a-form-item label="终点X">
              <a-input-number
-              v-decorator="['dsx', { initialValue: 0 }]"
+              v-decorator="['dsx', { initialValue: 4 }]"
             />
           </a-form-item>
         </a-col>
         <a-col :span="12">
           <a-form-item label="终点Y">
             <a-input-number
-              v-decorator="['dsy', { initialValue: 0 }]"
+              v-decorator="['dsy', { initialValue: 4 }]"
             />
           </a-form-item>
         </a-col>
@@ -108,21 +108,27 @@ export default {
 
   },
   mounted () {
-    // this.addGridHelper()
-    // this.addLight()
-    // this.addDDA(0, 0, 4, 4)
+    this.addGridHelper()
+    this.addLight()
+    this.addDDA(0, 0, 4, 4)
     this.showDrawer()
   },
   methods: {
     confirm () {
-      console.log(this.form)
-      // this.visible = false
-      // this.removeSphere()
+      this.visible = false
+      this.removeSphere()
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          console.log('Received values of form: ', values);
+          this.addDDA(values.x, values.y, values.dsx, values.dsy)
+        }
+      })
+
     },
     removeSphere () {
       while (this.sphereArr.length > 0) {
         let sphere = this.sphereArr.pop()
-        this.scene.pop(sphere)
+        this.scene.remove(sphere)
       }
     },
     showDrawer() {
