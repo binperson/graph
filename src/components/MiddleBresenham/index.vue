@@ -108,21 +108,35 @@ export default {
 
   },
   mounted () {
-    // this.addGridHelper()
-    // this.addLight()
-    // this.addDDA(0, 0, 4, 4)
+    this.addGridHelper()
+    this.addLight()
+    this.initMiddleBresenham(0, 0, 4, 3)
     this.showDrawer()
   },
   methods: {
     confirm () {
-      console.log(this.form)
-      // this.visible = false
-      // this.removeSphere()
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          let k = (values.dsy - values.y)/(values.dsx - values.x)
+          if (k <= 0 || k >= 1) {
+            this.$notification.open({
+              message: '提示',
+              description: '只讨论在0≤k≤1情况下的整数的中点Bresenham算法',
+              icon: <a-icon type="smile" style="color: #108ee9" />,
+            });
+          } else {
+            this.visible = false
+            this.removeSphere()
+            this.initMiddleBresenham(values.x, values.y, values.dsx, values.dsy)
+          }
+        }
+      })
+     
     },
     removeSphere () {
       while (this.sphereArr.length > 0) {
         let sphere = this.sphereArr.pop()
-        this.scene.pop(sphere)
+        this.scene.remove(sphere)
       }
     },
     showDrawer() {
@@ -142,22 +156,29 @@ export default {
       spotLight.shadowCameraFov = 30;
       this.scene.add(spotLight);
     },
-    addDDA (x, y, dsx, dsy) {
+    initMiddleBresenham (x, y, dsx, dsy) {
       let dx = dsx - x
       let dy = dsy - y
-      let esp1
-      if (Math.abs(dx) > Math.abs(dy)) {
-        esp1 = Math.abs(dx)
-      } else {
-        esp1 = Math.abs(dy)
+      let d = dx - 2*dy
+      this.addSphere(x * 10, y * 10)
+      this.addMiddleBresenham(d, x, y, dsx, dsy, dx, dy)
+    },
+    addMiddleBresenham (d, x, y, dsx, dsy, dx, dy) {
+      if (x === dsx && y === dsy) {
+        return
       }
-      let xIncre = dx/esp1
-      let yIncre = dy/esp1
-      for (let i = 0; i <= esp1; i++) {
+      if (d < 0) {
+        x = x + 1
+        y = y + 1
+        d = d + 2 * dx - 2 * dy
         this.addSphere(x * 10, y * 10)
-        x += xIncre
-        y += yIncre
+      } else {
+        x = x + 1
+        y = y
+        d = d - 2 * dy
+        this.addSphere(x * 10, y * 10)
       }
+      this.addMiddleBresenham(d, x, y, dsx, dsy, dx, dy)
     },
     /* Create Material */
     getMat(){

@@ -20,7 +20,10 @@ export default new Router({
     {
       path: '/MiddleBresenham',
       name: 'MiddleBresenham',
-      component: () => import(/* webpackChunkName: "about" */ './components/MiddleBresenham/')
+      component: () => import(/* webpackChunkName: "about" */ './components/MiddleBresenham/'),
+      meta: {
+        title: '在0≤k≤1情况下的整数的中点Bresenham算法'
+      }
     },
     {
       path: '/demo',
