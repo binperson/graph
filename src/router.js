@@ -26,6 +26,14 @@ export default new Router({
       }
     },
     {
+      path: '/OptimizeBresenham',
+      name: 'OptimizeBresenham',
+      component: () => import(/* webpackChunkName: "about" */ './components/OptimizeBresenham/'),
+      meta: {
+        title: '在0≤k≤1情况下的改进的Bresenham算法'
+      }
+    },
+    {
       path: '/demo',
       name: 'demo',
       component: Demo
